@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
 import { useState, useEffect } from "react";
 import "./App.css";
 
@@ -43,6 +44,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/Login" element={<Login />} />
           </Routes>
         </main>
       </div>
