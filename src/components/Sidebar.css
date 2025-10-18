@@ -1,0 +1,146 @@
+.sidebar-container {
+  width: 15%;
+  height: 100vh;
+  background-color: #000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  align-items: center;
+  transition: width 0.3s ease;
+}
+
+.sidebar-container-collapsed {
+  width: 4%;
+  height: 100vh;
+  background-color: #000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  align-items: center;
+  min-width: 68px;
+}
+
+.logo-section {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  margin-bottom: 1rem;
+  padding: 0.2rem;
+  align-items: center;
+}
+
+.logo-section-collapsed {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  margin-right: 0.4rem;
+}
+
+#logo {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+#logo-collapsed {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+}
+
+#app-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+#app-title-collapsed {
+  opacity: 0;
+  width: 0; 
+  overflow: hidden; 
+  margin-left: -10px; 
+  white-space: nowrap;
+}
+
+#collapse-icon {
+  margin-left: auto;
+  margin-right: 1rem;
+  padding-left: 0.5rem;
+  cursor: pointer;
+}
+
+#expand-icon {
+  cursor: pointer;
+}
+
+.nav-item {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  padding: 0.2rem;
+  align-items: center;
+  border-radius: 0.3rem;
+}
+
+.nav-item:hover {
+  background-color: #333; 
+  border-radius: 0.3rem;
+  width: 100%;
+  height: fit-content;
+  padding: 0.2rem;
+}    
+
+.nav-item-collapsed {
+  display: flex;
+  width: 80%;
+  height: fit-content;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 5%;
+  padding: 0.1rem;
+}
+
+.nav-item-collapsed:hover {
+  background-color: #333;
+  border-radius: 0.3rem;
+}
+
+#nav-title {
+  white-space: nowrap;
+  transition: opacity 0.3s ease, margin-left 0.3s ease;
+}
+
+#nav-title-collapsed {
+  opacity: 0;
+  width: 0; 
+  overflow: hidden; 
+  margin-left: -10px; 
+  white-space: nowrap;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: "0.5rem";
+}
+.nav-link.active {
+  background-color: #333;
+  border-radius: 0.3rem;
+}
+
+
+
+
+
