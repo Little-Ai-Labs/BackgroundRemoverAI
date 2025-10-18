@@ -35,7 +35,7 @@ export default function Login() {
                 <div className="login-visual" aria-hidden="true">
                     <div className="visual-inner">
                         <h2>Welcome Back</h2>
-                        <p>Sign in to continue to BackgroundRemoverAI</p>
+                        {/* <p>Sign in to continue to BackgroundRemoverAI</p> */}
                     </div>
                 </div>
 

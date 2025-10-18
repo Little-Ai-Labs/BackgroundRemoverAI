@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import "./Dashboard.css";
 
+// Sample assets (imported for bundlers)
+import sample1 from "../assets/logo.png";
+import sample2 from "../assets/remove-bg-icon.png";
+import sample3 from "../assets/invite-friends-img.png";
+import sample4 from "../assets/user-profile-icon.png";
+import sample5 from "../assets/credits-icon.png";
+
 const Dashboard = () => {
   const [images, setImages] = useState([]);
   const [processedImages, setProcessedImages] = useState([]);
@@ -10,47 +17,62 @@ const Dashboard = () => {
     setImages(Array.from(e.target.files));
   };
 
-  const handleSubmit = async () => {
-    if (images.length === 0) return;
-
+  // Centralized processing helper: accepts File[] or Blob[] and sets processedImages
+  const processFiles = async (fileList) => {
+    const files = Array.from(fileList);
     setLoading(true);
     setProcessedImages([]);
 
     try {
-      // Simulate API call with timeout (replace with your real API call)
       const results = await Promise.all(
-        images.map(
-          (image) =>
+        files.map(
+          (file) =>
             new Promise((resolve) => {
               const reader = new FileReader();
               reader.onloadend = () => resolve(reader.result);
-              reader.readAsDataURL(image);
+              reader.readAsDataURL(file);
             })
         )
       );
 
-      // Simulate API processing delay
+      // small artificial delay for UX consistency
       setTimeout(() => {
         setProcessedImages(results);
         setLoading(false);
-      }, 2000);
-    } catch (error) {
-      console.error("Error processing images:", error);
+      }, 600);
+    } catch (err) {
+      console.error("Error while processing files:", err);
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (images.length === 0) return;
+    await processFiles(images);
+  };
+
+  // Load a sample image (bundled asset) and process it as if uploaded
+  const handleSampleClick = async (assetSrc) => {
+    try {
+      // fetch the asset as blob then convert to File-like object
+      const res = await fetch(assetSrc);
+      const blob = await res.blob();
+      const file = new File([blob], "sample.jpg", { type: blob.type });
+      await processFiles([file]);
+    } catch (err) {
+      console.error("Error loading sample image:", err);
     }
   };
 
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>Background Remover</h1>
-        <p className="tagline">Transform your images effortlessly!</p>
-        <blockquote className="quote">
-          "A clean background is the canvas of creativity."
-        </blockquote>
+        <h1>Remove Image Background</h1>
+        <p className="tagline">Automatically erase backgrounds and highlight the subject of your images
+in a few simple steps. Quick, easy and professional results!</p>
       </header>
 
-      <section className="upload-section">
+      <div className="upload-section">
         <input
           type="file"
           multiple
@@ -58,10 +80,22 @@ const Dashboard = () => {
           onChange={handleFileChange}
           className="file-input"
         />
+        <p>Drop an image or paste URL (upto resolution 10000 x 10000 px)
+Supported formats:png|jpeg|jpg|webp|heic
+By uploading an image or URL you agree to our Terms of Use and Privacy Policy. </p>
         <button className="submit-btn" onClick={handleSubmit}>
           Remove Background
         </button>
-      </section>
+      </div>
+      <p className="dashboard-para">No images? Try these images</p>
+      <div className="sample-images-row">
+        {/* Using bundled assets as clickable samples */}
+        <img src={sample1} alt="sample-1" className="sample-thumb" onClick={() => handleSampleClick(sample1)} />
+        <img src={sample2} alt="sample-2" className="sample-thumb" onClick={() => handleSampleClick(sample2)} />
+        <img src={sample3} alt="sample-3" className="sample-thumb" onClick={() => handleSampleClick(sample3)} />
+        <img src={sample4} alt="sample-4" className="sample-thumb" onClick={() => handleSampleClick(sample4)} />
+        <img src={sample5} alt="sample-5" className="sample-thumb" onClick={() => handleSampleClick(sample5)} />
+      </div>
 
       {loading && (
         <div className="loading">
