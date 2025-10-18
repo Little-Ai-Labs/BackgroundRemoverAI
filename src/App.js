@@ -5,6 +5,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import { useState, useEffect } from "react";
+import BulkBgRemover from "./pages/BulkBgRemover";
 import "./App.css";
 
 function App() {
@@ -39,12 +40,16 @@ function App() {
     <Router>
       <div className="app-container">
         <Sidebar sendCollapsedStateToApp={handleMainContentWidth} />
-        <main className="main-content" style={{ width: mainContentWidth }}>
+        <main
+          className="main-content"
+          style={{ width: mainContentWidth, backgroundColor: "black" }}
+        >
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/Login" element={<Login />} />
+            <Route path="/bulk-bg-remover" element={<BulkBgRemover />} />
           </Routes>
         </main>
       </div>

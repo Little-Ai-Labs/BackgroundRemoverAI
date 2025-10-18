@@ -11,6 +11,7 @@ import inviteFriendsImg from "../assets/invite-friends-img.png";
 import userProfileIcon from "../assets/user-profile-icon.png";
 import settingsIcon from "../assets/settings-icon.png";
 import sidebarCollapseIcon from "../assets/sidebar-collapse-icon.png";
+import loginIcon from "../assets/login-icon.png";
 import { NavLink } from "react-router-dom";
 import { BiColor } from "react-icons/bi";
 
@@ -97,7 +98,7 @@ const Sidebar = (props) => {
       </div>
       <div className={collapsed ? "nav-item-collapsed" : "nav-item"}>
         <NavLink
-          to="/settings"
+          to="/bulk-bg-remover"
           className="nav-link"
           style={{
             justifyContent: collapsed ? "center" : "flex-start",
@@ -149,6 +150,19 @@ const Sidebar = (props) => {
         >
           <img id={collapsed ? "logo-collapsed" : "logo"} src={creditsIcon} />
           {!collapsed && <span>Credits</span>}
+        </NavLink>
+      </div>
+      <hr className="divider" />
+      <div className={collapsed ? "nav-item-collapsed" : "nav-item"}>
+        <NavLink
+          to="/login"
+          className="nav-link"
+          style={{
+            justifyContent: collapsed ? "center" : "flex-start",
+          }}
+        >
+          <img id={collapsed ? "logo-collapsed" : "logo"} src={loginIcon} />
+          {!collapsed && <span>Login</span>}
         </NavLink>
       </div>
 
