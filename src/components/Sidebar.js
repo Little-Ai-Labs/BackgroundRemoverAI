@@ -84,6 +84,18 @@ const Sidebar = (props) => {
           {!collapsed && <span>Profile</span>}
         </NavLink>
       </div>
+      <div className={collapsed ? "nav-item-collapsed" : "nav-item"}>
+        <NavLink
+          to="/login"
+          className="nav-link"
+          style={{
+            justifyContent: collapsed ? "center" : "flex-start",
+          }}
+        >
+          <img id={collapsed ? "logo-collapsed" : "logo"} src={logo} />
+          {!collapsed && <span>Login</span>}
+        </NavLink>
+      </div>
     </div>
   );
 };
