@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+import WelcomePopup from "../components/popups/WelcomePopup";
 
 // Sample assets (imported for bundlers)
 import sample1 from "../assets/logo.png";
@@ -12,6 +13,15 @@ const Dashboard = () => {
   const [images, setImages] = useState([]);
   const [processedImages, setProcessedImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 1000); // Show after 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFileChange = (e) => {
     setImages(Array.from(e.target.files));
@@ -117,6 +127,8 @@ By uploading an image or URL you agree to our Terms of Use and Privacy Policy. <
           ))}
         </section>
       )}
+
+      {showPopup && <WelcomePopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };

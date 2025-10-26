@@ -1,0 +1,158 @@
+.welcome-popup-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 25%;
+  height: 60%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  border-radius: 30px;
+  border: 2px solid #333;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.token-icon {
+  width: 60px;
+  height: 60px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+}
+
+.pop-up-close-btn {
+  position: absolute;
+  top: 20px;
+  left: 175px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+.welcome-popup-header {
+  line-height: 30px;
+  font-style: bold;
+  margin-bottom: 30px;
+}
+
+.welcome-popup-text {
+  color: white;
+}
+
+#greeting {
+  color: #4cd964
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+#credit-info {
+  font-size: 24px;
+}
+
+.welcome-popup-body {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.welcome-popup-body p {
+  font-size: 14px;
+}
+
+#credit-balance-heading {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.progress-container {
+  width: 80%;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 50px;
+  margin-bottom: 20px;
+}
+
+.progress-container .progress-bar {
+  position: relative;
+  height: 15px;
+  width: 80%;
+  background-color: #555; /* gray background */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 3%; /* percentage filled based on progress */
+  background-color: #d32f2f; /* red fill */
+  border-radius: 10px 0 0 10px; /* rounded start edge */
+}
+
+.progress-value {
+  position: absolute;
+  top: 50%;
+  /* left: 10px; */
+  transform: translateY(-50%);
+  background-color: #d32f2f;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #ccc;
+  font-size: 14px;
+  width: 80%;
+}
+
+.terms-of-purchase {
+  margin-top: 20px;
+}
+
+.terms-of-purchase p{
+  color: #494848;
+  font-size: 12px;
+}
+
+.welcome-popup-overlay button {
+  margin-top: auto;
+  margin-bottom: 30px;
+  padding: 10px 20px;
+  background-color: #4cd964;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  background-color: #3164f4;
+  width: 240px;
+  height: 60px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+}
