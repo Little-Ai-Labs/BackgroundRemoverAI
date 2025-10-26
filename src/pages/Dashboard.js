@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+import WelcomePopup from "../components/popups/WelcomePopup";
 
 const Dashboard = () => {
   const [images, setImages] = useState([]);
   const [processedImages, setProcessedImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 1000); // Show after 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFileChange = (e) => {
     setImages(Array.from(e.target.files));
@@ -83,6 +93,8 @@ const Dashboard = () => {
           ))}
         </section>
       )}
+
+      {showPopup && <WelcomePopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };
