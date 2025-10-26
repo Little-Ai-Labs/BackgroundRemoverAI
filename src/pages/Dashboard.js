@@ -16,11 +16,50 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-    }, 1000); // Show after 3 seconds
+    const checkFirstTimeUser = async () => {
+      // First check localStorage to avoid unnecessary API calls
+      const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+      if (hasSeenWelcome === "true") {
+        return; // User has already seen the welcome popup
+      }
 
-    return () => clearTimeout(timer);
+      try {
+        // Only make API call if localStorage doesn't have the status
+        const response = await fetch("/api/user/check-first-time", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.isFirstTime) {
+          const timer = setTimeout(() => {
+            setShowPopup(true);
+            // Mark first-time status in both backend and localStorage
+            localStorage.setItem("hasSeenWelcome", "true");
+            fetch("/api/user/mark-welcomed", {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }, 1000);
+
+          return () => clearTimeout(timer);
+        } else {
+          // If backend says user is not first time, update localStorage
+          localStorage.setItem("hasSeenWelcome", "true");
+        }
+      } catch (error) {
+        console.error("Error checking first-time user status:", error);
+      }
+    };
+
+    checkFirstTimeUser();
   }, []);
 
   const handleFileChange = (e) => {
@@ -78,8 +117,10 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <header className="dashboard-header">
         <h1>Remove Image Background</h1>
-        <p className="tagline">Automatically erase backgrounds and highlight the subject of your images
-in a few simple steps. Quick, easy and professional results!</p>
+        <p className="tagline">
+          Automatically erase backgrounds and highlight the subject of your
+          images in a few simple steps. Quick, easy and professional results!
+        </p>
       </header>
 
       <div className="upload-section">
@@ -90,9 +131,11 @@ in a few simple steps. Quick, easy and professional results!</p>
           onChange={handleFileChange}
           className="file-input"
         />
-        <p>Drop an image or paste URL (upto resolution 10000 x 10000 px)
-Supported formats:png|jpeg|jpg|webp|heic
-By uploading an image or URL you agree to our Terms of Use and Privacy Policy. </p>
+        <p>
+          Drop an image or paste URL (upto resolution 10000 x 10000 px)
+          Supported formats:png|jpeg|jpg|webp|heic By uploading an image or URL
+          you agree to our Terms of Use and Privacy Policy.{" "}
+        </p>
         <button className="submit-btn" onClick={handleSubmit}>
           Remove Background
         </button>
@@ -100,11 +143,36 @@ By uploading an image or URL you agree to our Terms of Use and Privacy Policy. <
       <p className="dashboard-para">No images? Try these images</p>
       <div className="sample-images-row">
         {/* Using bundled assets as clickable samples */}
-        <img src={sample1} alt="sample-1" className="sample-thumb" onClick={() => handleSampleClick(sample1)} />
-        <img src={sample2} alt="sample-2" className="sample-thumb" onClick={() => handleSampleClick(sample2)} />
-        <img src={sample3} alt="sample-3" className="sample-thumb" onClick={() => handleSampleClick(sample3)} />
-        <img src={sample4} alt="sample-4" className="sample-thumb" onClick={() => handleSampleClick(sample4)} />
-        <img src={sample5} alt="sample-5" className="sample-thumb" onClick={() => handleSampleClick(sample5)} />
+        <img
+          src={sample1}
+          alt="sample-1"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample1)}
+        />
+        <img
+          src={sample2}
+          alt="sample-2"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample2)}
+        />
+        <img
+          src={sample3}
+          alt="sample-3"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample3)}
+        />
+        <img
+          src={sample4}
+          alt="sample-4"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample4)}
+        />
+        <img
+          src={sample5}
+          alt="sample-5"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample5)}
+        />
       </div>
 
       {loading && (
