@@ -161,57 +161,7 @@ setProcessedImages([]);
         </p>
    </header>
 
-      <div className="upload-section">
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-          className="file-input"
-        />
-        <p>
-          Drop an image or paste URL (upto resolution 10000 x 10000 px)
-          Supported formats:png|jpeg|jpg|webp|heic By uploading an image or URL
-          you agree to our Terms of Use and Privacy Policy.{" "}
-        </p>
-        <button className="submit-btn" onClick={handleSubmit}>
-          Remove Background
-        </button>
-      </div>
-      <p className="dashboard-para">No images? Try these images</p>
-      <div className="sample-images-row">
-        {/* Using bundled assets as clickable samples */}
-        <img
-          src={sample1}
-          alt="sample-1"
-          className="sample-thumb"
-          onClick={() => handleSampleClick(sample1)}
-        />
-        <img
-          src={sample2}
-          alt="sample-2"
-          className="sample-thumb"
-          onClick={() => handleSampleClick(sample2)}
-        />
-        <img
-          src={sample3}
-          alt="sample-3"
-          className="sample-thumb"
-          onClick={() => handleSampleClick(sample3)}
-        />
-        <img
-          src={sample4}
-          alt="sample-4"
-          className="sample-thumb"
-          onClick={() => handleSampleClick(sample4)}
-        />
-        <img
-          src={sample5}
-          alt="sample-5"
-          className="sample-thumb"
-          onClick={() => handleSampleClick(sample5)}
-        />
-      </div>
+      
    <div className="upload-section">
     {/* 👈 Hidden file input element */}
     <input
