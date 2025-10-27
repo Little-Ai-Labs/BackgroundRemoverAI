@@ -174,6 +174,9 @@ const Sidebar = (props) => {
           <img
             id={collapsed ? "settings-icon-collapsed" : "settings-icon"}
             src={settingsIcon}
+            onClick={() => {
+              if (props.onOpenAccountModal) props.onOpenAccountModal(true);
+            }}
           />
         </div>
       </div>

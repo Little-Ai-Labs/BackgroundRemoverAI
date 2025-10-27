@@ -1,0 +1,580 @@
+/* ================================================= */
+/* GLOBAL RESET: Fixes scrollbar issues */
+/* ================================================= */
+html, body {
+    margin: 0;
+    padding: 0;
+    /* Prevents scrollbars that can be caused by elements slightly overflowing */
+    overflow: hidden; 
+    height: 100%;
+}
+*, *::before, *::after {
+    /* Ensures padding and border are included in the element's total width and height */
+    box-sizing: border-box; 
+}
+
+/* ================================================= */
+/* EDITOR WRAPPER & LAYOUT */
+/* ================================================= */
+.editor-wrapper {
+    /* Set to 100vh/100vw to ensure it fills the screen perfectly */
+    height: 100vh; 
+    width: 100vw;
+    padding: 0;
+    color: #e6eef8;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden; 
+}
+
+.editor-main-container {
+    display: flex;
+    align-items: center; /* Center canvas vertically */
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+    max-width: 1400px;
+    /* Sufficient padding to prevent the floating sidebar from causing overflow on the right */
+    padding: 2rem 100px 2rem 20px; 
+}
+
+.canvas-wrap {
+    flex: 0 0 auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    max-width: 100%; 
+}
+
+/* ================================================= */
+/* IMAGE STAGE AND COMPARISON SLIDER */
+/* ================================================= */
+.canvas-stage {
+    position: relative;
+    background: #0b0b0b;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    overflow: hidden; 
+    margin-top: 1rem;
+    /* Constrain size to fit within viewport dynamically */
+    max-width: calc(100vw - 120px); /* Account for sidebar on wide screens */
+    max-height: 80vh; 
+}
+
+/* All canvases should fill their immediate parent */
+.original-canvas,
+.processed-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 10; 
+}
+
+/* Checkerboard for transparent area */
+.processed-canvas {
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                      linear-gradient(135deg, #ccc 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #ccc 75%),
+                      linear-gradient(135deg, transparent 75%, #ccc 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+}
+
+/* The container for the 'After' image. Its width property clips the image. */
+.result-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden; 
+    z-index: 20; 
+}
+
+/* Draggable Split Handle */
+.split-handle {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 36px; 
+    transform: translateX(-50%); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: ew-resize; 
+    z-index: 30; 
+}
+.split-handle::before { /* The thin line */
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: #fff;
+    z-index: 1;
+}
+.handle-knob { /* The '+' button in the middle */
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.handle-knob::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 2px;
+    background: #000;
+}
+.handle-knob::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 12px;
+    background: #000;
+}
+
+/* Before/After Labels on the image */
+.compare-labels {
+    position: absolute;
+    z-index: 40;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.label-btn {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.label-btn.active {
+    background: #fff;
+    color: #000;
+    font-weight: bold;
+}
+
+/* ================================================= */
+/* SIDEBAR (THUMBNAILS) */
+/* ================================================= */
+.editor-sidebar {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 70px; 
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 50; 
+}
+
+.plus-btn { /* The big '+' button */
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.plus-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.thumb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.side-thumb {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    border: 2px solid transparent;
+}
+.side-thumb:first-child { 
+    border-color: #2f6cff;
+}
+
+/* ================================================= */
+/* BOTTOM CONTROL BAR (FLOWING CONTENT) */
+/* ================================================= */
+.control-bar-bottom {
+    /* Flowing content, positioned directly below the image stage */
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    border-radius: 10px; 
+    padding: 1rem 2rem;
+    margin-top: 2rem; 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 10; 
+
+    /* Ensures the control bar fits the content area */
+    width: 100%; 
+    max-width: 800px; 
+}
+
+.control-bar-note {
+    font-size: 0.9rem;
+    color: #b0b0b0;
+    flex-basis: 300px;
+    text-align: center;
+}
+
+.options-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.tool-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e6eef8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.download-btn-bottom {
+    background: #2f6cff;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* ================================================= */
+/* RESPONSIVE ADJUSTMENTS */
+/* ================================================= */
+@media (max-width: 1200px) {
+    .editor-main-container {
+        padding: 2rem 80px 2rem 20px;
+    }
+    .editor-sidebar {
+        right: 10px;
+    }
+}
+
+@media (max-width: 900px) {
+    /* Enable vertical scroll on small screens for long content */
+    .editor-wrapper {
+        overflow-y: auto; 
+    }
+    html, body {
+        /* Allow scrollbars on body/html for small screens in this case */
+        overflow: auto;
+    }
+    
+    .editor-main-container { 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 20px;
+    }
+
+    .canvas-stage {
+        max-width: 100%; /* Allow image to fill available width */
+    }
+
+    /* Sidebar moves below the canvas and becomes horizontal */
+    .editor-sidebar { 
+        position: relative; 
+        top: auto; 
+        transform: none; 
+        width: 100%; 
+        flex-direction: row; 
+        justify-content: center; 
+        padding-top: 1rem;
+    }
+    
+    .thumb-list {
+        flex-direction: row;
+    }
+    .plus-btn {
+        order: -1; 
+    }
+
+    /* Bottom Control Bar stacks on mobile */
+    .control-bar-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem 1rem;
+        margin-top: 1.5rem;
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    
+    .options-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .tool-btn {
+        padding: 0.6rem 0.8rem;
+    }
+}
+
+/* Existing editor-topbar and other unnecessary styles are removed/commented out */
+
+/* Existing editor-topbar and other unnecessary styles are removed/commented out */
+
+/* Editor layout
+.editor-wrapper {
+  min-height: 100vh;
+  padding: 2.2rem 3rem;
+  color: #e6eef8;
+  background: #000;
+}
+
+.editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.editor-topbar .ghost {
+  background: transparent;
+  border: none;
+  color: #bcd2ff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.editor-controls {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex: 1;
+}
+
+.tool {
+  background: rgba(255,255,255,0.03);
+  color: #dfe9ff;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.download-btn {
+  background: #2f6cff;
+  color: #fff;
+  padding: 0.7rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.editor-main {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.canvas-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.canvas-stage {
+  position: relative;
+  background: #0b0b0b;
+ 
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+ 
+  overflow: hidden; 
+}
+
+
+.original-canvas,
+.processed-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 10; 
+
+
+.result-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%; 
+  height: 100%;
+  overflow: hidden; 
+  z-index: 20; 
+  
+} 
+
+
+.result-overlay .processed-canvas {
+
+  z-index: 1; 
+ 
+}
+
+
+.split-handle {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 36px; 
+  transform: translateX(-50%); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ew-resize; 
+  z-index: 30; 
+}
+
+.split-handle .handle-line {
+  width: 2px;
+  height: 70%; 
+  background: rgba(255,255,255,0.6);
+  border-radius: 2px;
+}
+
+.split-handle .handle-knob {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+  transform: translateY(-50%); 
+  top: 50%;
+}
+
+
+.label {
+    position: absolute;
+    top: 10px; 
+    padding: 0.4rem 0.8rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 40; 
+    pointer-events: none; 
+    user-select: none; 
+.before-label {
+    left: 10px; 
+}
+.after-label {
+    
+    transform: translateX(-100%); 
+}
+*/
+/*
+.editor-bottom {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.editor-bottom .small {
+  color: #cbdcff;
+  font-size: 0.9rem;
+}
+
+.note {
+  color: #9fb0d9;
+  font-size: 0.8rem;
+}
+
+.editor-sidebar {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.thumb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.side-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+
+.plus {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.02);
+  color: #cde0ff;
+  font-size: 1.5rem;
+}
+
+.editor-loading {
+  position: fixed;
+  left: 50%;
+  top: 60px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .editor-main { flex-direction: column; }
+  .editor-sidebar { width: 100%; flex-direction: row; justify-content: center; }
+} */
