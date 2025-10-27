@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react"; // 👈 Import useRef
+import React, { useState, useRef, useEffect } from "react"; // 👈 Import useRef
 import "./Dashboard.css";
+import WelcomePopup from "../components/popups/WelcomePopup";
 // Sample assets (imported for bundlers)
 import sample1 from "../assets/logo.png";
 import sample2 from "../assets/remove-bg-icon.png";
@@ -13,6 +14,54 @@ const Dashboard = () => {
   const [processedImages, setProcessedImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const checkFirstTimeUser = async () => {
+      // First check localStorage to avoid unnecessary API calls
+      const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+      if (hasSeenWelcome === "true") {
+        return; // User has already seen the welcome popup
+      }
+
+      try {
+        // Only make API call if localStorage doesn't have the status
+        const response = await fetch("/api/user/check-first-time", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.isFirstTime) {
+          const timer = setTimeout(() => {
+            setShowPopup(true);
+            // Mark first-time status in both backend and localStorage
+            localStorage.setItem("hasSeenWelcome", "true");
+            fetch("/api/user/mark-welcomed", {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }, 1000);
+
+          return () => clearTimeout(timer);
+        } else {
+          // If backend says user is not first time, update localStorage
+          localStorage.setItem("hasSeenWelcome", "true");
+        }
+      } catch (error) {
+        console.error("Error checking first-time user status:", error);
+      }
+    };
+
+    checkFirstTimeUser();
+  }, []);
 
   const handleFileChange = (e) => {
   setImages(Array.from(e.target.files));
@@ -106,10 +155,63 @@ setProcessedImages([]);
   <div className="dashboard-container">
    <header className="dashboard-header">
     <h1>Remove Image Background</h1>
-    <p className="tagline">Automatically erase backgrounds and highlight the subject of your images
-in a few simple steps. Quick, easy and professional results!</p>
+    <p className="tagline">
+          Automatically erase backgrounds and highlight the subject of your
+          images in a few simple steps. Quick, easy and professional results!
+        </p>
    </header>
 
+      <div className="upload-section">
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input"
+        />
+        <p>
+          Drop an image or paste URL (upto resolution 10000 x 10000 px)
+          Supported formats:png|jpeg|jpg|webp|heic By uploading an image or URL
+          you agree to our Terms of Use and Privacy Policy.{" "}
+        </p>
+        <button className="submit-btn" onClick={handleSubmit}>
+          Remove Background
+        </button>
+      </div>
+      <p className="dashboard-para">No images? Try these images</p>
+      <div className="sample-images-row">
+        {/* Using bundled assets as clickable samples */}
+        <img
+          src={sample1}
+          alt="sample-1"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample1)}
+        />
+        <img
+          src={sample2}
+          alt="sample-2"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample2)}
+        />
+        <img
+          src={sample3}
+          alt="sample-3"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample3)}
+        />
+        <img
+          src={sample4}
+          alt="sample-4"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample4)}
+        />
+        <img
+          src={sample5}
+          alt="sample-5"
+          className="sample-thumb"
+          onClick={() => handleSampleClick(sample5)}
+        />
+      </div>
    <div className="upload-section">
     {/* 👈 Hidden file input element */}
     <input
@@ -161,6 +263,8 @@ in a few simple steps. Quick, easy and professional results!</p>
     </div>
    )}
 
+
+      {showPopup && <WelcomePopup onClose={() => setShowPopup(false)} />}
   </div>
  );
 };
