@@ -4,6 +4,8 @@ p, h1 {
 
 html {
   box-sizing: border-box;
+  font-size: 16px;
+  font-style: Arial;
 }
 *, *::before, *::after {
   box-sizing: inherit;

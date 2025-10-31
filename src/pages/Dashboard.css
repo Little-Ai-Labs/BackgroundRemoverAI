@@ -1,6 +1,5 @@
-/* General container */
 .dashboard-container {
-    width: 100%;
+    width: 80%;
     max-width: 1100px;
     margin: 0 auto;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -9,28 +8,26 @@
     background: transparent;
 }
 
-/* Header styling */
-.dashboard-header h1 {
-    font-size: 3.2rem;
+.dashboard-container__header h1 {
+    font-size: clamp(1.5rem, 5vw, 3.2rem);
     margin: 0 0 0.6rem;
     text-align: center;
     color: #eee;
+    font-weight: 400;
 }
 
-.dashboard-header .tagline {
+.dashboard-container__header--tagline {
     font-size: 1rem;
-    color: #eee;
-    margin: 0 auto 1.8rem;
-    max-width: 750px;
+    color: #c1c1c1;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    max-width: 49%;
     text-align: center;
     line-height: 1.5;
 }
 
-/* ---------------------------------------------------- */
-/* 1. Updated styles for the wider 'cinema screen' upload section */
-/* ---------------------------------------------------- */
-
-.upload-section {
+.dashboard-container__upload-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -39,191 +36,119 @@
     margin: 1.5rem auto 2.5rem;
     border-radius: 12px;
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px dashed #a8a4a1;
     padding: 3rem 2rem;
-    width: 90%; /* Increase width to 90% */
-    max-width: 100%; /* Increase max-width significantly */
+    width: 53%;
     min-height: 25px;
+    background-color: #0e0e0e;
 }
 
-/* Hide the native file input */
-.file-input-hidden {
-    display: none;
-}
-
-/* Style for the custom file upload area */
-.custom-file-upload {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 1rem;
-}
-
-.choose-files-btn {
-    background-color: #eee;
-    color: #0e0e0e;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    flex-shrink: 0;
-    margin-right: -1px;
-}
-
-.choose-files-btn:hover {
-    background-color: #ddd;
-}
-
-.file-name-display {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    color: #999;
-    background-color: #222;
-    border: 1px solid #444;
-    border-left: none;
-    border-radius: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-    max-width: 300px; /* Adjusted max width for display to fit better in the wider container */
-}
-
-/* Info text layout */
-.upload-info-text {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.upload-info-text p {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin: 0.25rem 0;
-}
-
-.upload-info-text a {
-    color: #2f6cff;
-    text-decoration: none;
-}
-
-.upload-info-text a:hover {
-    text-decoration: underline;
-}
-
-/* Main action button */
-.submit-btn {
-    background-color: #2f6cff;
+.dashboard-container__upload-section--upload-image-btn {
+    background-color: #3164f4;
     color: #eee;
-    padding: 0.85rem 1.8rem;
-    font-size: 1rem;
+    padding: 10px;
+    font-size: clamp(14px, 2vw, 24px);
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.12s ease;
-    width: 100%;
-    max-width: 300px;
-    margin: 0.25rem auto;
+    width: 50%;
     box-shadow: 0 8px 20px rgba(47, 108, 255, 0.26);
+    text-align: center;
+    min-width: 45px;
+    flex-shrink: 0;
 }
 
-.submit-btn:hover {
+.dashboard-container__upload-section--upload-image-btn:hover {
     background-color: #1c4fe6;
-    transform: translateY(-2px);
+    transform: translateY(1px);
 }
 
-/* Text above sample images */
-.no-images-text {
-    font-size: 1rem;
-    color: #eee;
-    font-style: italic;
+.dashboard-container__upload-section--info-text p{
+    font-size: 14px;
+    color: #545352;
+    text-align: center;
+}
+
+.dashboard-container__upload-section--info-text a:link,.dashboard-container__upload-section--info-text a:visited{
+    font-size: 14px;
+    color: #545352;
+    text-align: center;
+    text-decoration-color: white;
+}
+
+.dashboard-container__upload-section--info-text a:hover {
+    color: #fff; 
+    text-decoration-color: white;
+}
+
+.dashboard-container--no-images-text {
+    font-size: 14px;
+    color: #c1c1c1;
     margin: 2rem auto 1.2rem;
     text-align: center;
 }
 
-/* Sample thumbnails row */
-.sample-images-row {
+.dashboard-container__sample-images-row {
     display: flex;
     gap: 1.5rem;
     align-items: center;
     margin: 0 auto 2rem;
     justify-content: center;
-    max-width: 850px; /* Match the upload section's max width */
+    flex-wrap: wrap;
 }
 
-/* ---------------------------------------------------- */
-/* 2. Updated sample image styles (square with rounded edges) */
-/* ---------------------------------------------------- */
 
-.sample-thumb {
+.dashboard-container__sample-images-row--sample-thumb{
     width: 72px;
     height: 72px;
     object-fit: cover;
-    border-radius: 10px; /* Square with rounded corners */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.06);
     background: #0f0f0f;
-    padding: 0; /* Remove padding if you want the image to fill the square */
-    /* If your sample images are icons like in the first image, re-add padding: 10px; */
-    /* If your sample images are full photos like in the second image, use padding: 0; */
 }
 
-.sample-thumb:hover {
-    transform: translateY(-6px) scale(1.03);
+.dashboard-container__sample-images-row--sample-thumb:hover {
+    transform: translateY(-3px) scale(1.03);
     cursor: pointer;
     transition: transform 0.18s ease;
 }
 
-/* Loading spinner, Results section, etc. (Kept the same) */
-
-.loading {
+/* Upload overlay shown while backend processing is in progress */
+.upload-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    z-index: 1200;
+}
+.upload-overlay__content {
     display: flex;
     flex-direction: column;
+    gap: 12px;
     align-items: center;
-    margin: 2rem 0;
+    background: rgba(12,12,12,0.85);
+    padding: 22px 28px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+.upload-text {
+    color: #fff;
+    font-size: 15px;
 }
 
 .spinner {
-    width: 3rem;
-    height: 3rem;
-    border: 0.4rem solid #eee;
-    border-top: 0.4rem solid #007bff;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
+    border: 5px solid rgba(255,255,255,0.12);
+    border-top-color: #4ea1ff;
     animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-header h1 {
-        font-size: 2rem;
-    }
-
-    .dashboard-header .tagline {
-        font-size: 1rem;
-    }
-
-    .upload-section {
-        width: 95%; /* Make it slightly wider on mobile */
-    }
-
-    .submit-btn {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .sample-images-row {
-        gap: 1rem;
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

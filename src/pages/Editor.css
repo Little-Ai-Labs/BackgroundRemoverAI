@@ -1,580 +1,470 @@
-/* ================================================= */
-/* GLOBAL RESET: Fixes scrollbar issues */
-/* ================================================= */
-html, body {
-    margin: 0;
-    padding: 0;
-    /* Prevents scrollbars that can be caused by elements slightly overflowing */
-    overflow: hidden; 
-    height: 100%;
-}
-*, *::before, *::after {
-    /* Ensures padding and border are included in the element's total width and height */
-    box-sizing: border-box; 
+.editor-page {
+  position: relative;
+  height: 90%;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ================================================= */
-/* EDITOR WRAPPER & LAYOUT */
-/* ================================================= */
-.editor-wrapper {
-    /* Set to 100vh/100vw to ensure it fills the screen perfectly */
-    height: 100vh; 
-    width: 100vw;
-    padding: 0;
-    color: #e6eef8;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden; 
+.preview-image {
+  height: 400px;
+  width: 400px;
+  object-fit: contain;
 }
 
-.editor-main-container {
-    display: flex;
-    align-items: center; /* Center canvas vertically */
-    justify-content: center;
-    flex-grow: 1;
-    width: 100%;
-    max-width: 1400px;
-    /* Sufficient padding to prevent the floating sidebar from causing overflow on the right */
-    padding: 2rem 100px 2rem 20px; 
-}
-
-.canvas-wrap {
-    flex: 0 0 auto; 
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    max-width: 100%; 
-}
-
-/* ================================================= */
-/* IMAGE STAGE AND COMPARISON SLIDER */
-/* ================================================= */
-.canvas-stage {
-    position: relative;
-    background: #0b0b0b;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    overflow: hidden; 
-    margin-top: 1rem;
-    /* Constrain size to fit within viewport dynamically */
-    max-width: calc(100vw - 120px); /* Account for sidebar on wide screens */
-    max-height: 80vh; 
-}
-
-/* All canvases should fill their immediate parent */
-.original-canvas,
-.processed-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    z-index: 10; 
-}
-
-/* Checkerboard for transparent area */
-.processed-canvas {
-    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), 
-                      linear-gradient(135deg, #ccc 25%, transparent 25%),
-                      linear-gradient(45deg, transparent 75%, #ccc 75%),
-                      linear-gradient(135deg, transparent 75%, #ccc 75%);
-    background-size: 10px 10px;
-    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
-}
-
-/* The container for the 'After' image. Its width property clips the image. */
-.result-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    overflow: hidden; 
-    z-index: 20; 
-}
-
-/* Draggable Split Handle */
-.split-handle {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 36px; 
-    transform: translateX(-50%); 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: ew-resize; 
-    z-index: 30; 
-}
-.split-handle::before { /* The thin line */
-    content: '';
-    position: absolute;
-    width: 2px;
-    height: 100%;
-    background: #fff;
-    z-index: 1;
-}
-.handle-knob { /* The '+' button in the middle */
-    position: absolute;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-}
-.handle-knob::before {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 2px;
-    background: #000;
-}
-.handle-knob::after {
-    content: '';
-    position: absolute;
-    width: 2px;
-    height: 12px;
-    background: #000;
-}
-
-/* Before/After Labels on the image */
-.compare-labels {
-    position: absolute;
-    z-index: 40;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    overflow: hidden;
-}
-.label-btn {
-    background: transparent;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 0.9rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.label-btn.active {
-    background: #fff;
-    color: #000;
-    font-weight: bold;
-}
-
-/* ================================================= */
-/* SIDEBAR (THUMBNAILS) */
-/* ================================================= */
-.editor-sidebar {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 70px; 
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    padding: 10px 0;
-    z-index: 50; 
-}
-
-.plus-btn { /* The big '+' button */
-    background: #fff;
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-}
-
-.plus-icon {
-    font-size: 2.5rem;
-    line-height: 1;
-}
-
-.thumb-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-}
-
-.side-thumb {
-    width: 56px;
-    height: 56px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-    border: 2px solid transparent;
-}
-.side-thumb:first-child { 
-    border-color: #2f6cff;
-}
-
-/* ================================================= */
-/* BOTTOM CONTROL BAR (FLOWING CONTENT) */
-/* ================================================= */
-.control-bar-bottom {
-    /* Flowing content, positioned directly below the image stage */
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.05); 
-    border-radius: 10px; 
-    padding: 1rem 2rem;
-    margin-top: 2rem; 
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
-    z-index: 10; 
-
-    /* Ensures the control bar fits the content area */
-    width: 100%; 
-    max-width: 800px; 
-}
-
-.control-bar-note {
-    font-size: 0.9rem;
-    color: #b0b0b0;
-    flex-basis: 300px;
-    text-align: center;
-}
-
-.options-group {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.tool-btn {
-    background: rgba(255, 255, 255, 0.05);
-    color: #e6eef8;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.download-btn-bottom {
-    background: #2f6cff;
-    color: #fff;
-    padding: 0.8rem 1.5rem;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-/* ================================================= */
-/* RESPONSIVE ADJUSTMENTS */
-/* ================================================= */
-@media (max-width: 1200px) {
-    .editor-main-container {
-        padding: 2rem 80px 2rem 20px;
-    }
-    .editor-sidebar {
-        right: 10px;
-    }
-}
-
-@media (max-width: 900px) {
-    /* Enable vertical scroll on small screens for long content */
-    .editor-wrapper {
-        overflow-y: auto; 
-    }
-    html, body {
-        /* Allow scrollbars on body/html for small screens in this case */
-        overflow: auto;
-    }
-    
-    .editor-main-container { 
-        flex-direction: column; 
-        align-items: center; 
-        padding: 20px;
-    }
-
-    .canvas-stage {
-        max-width: 100%; /* Allow image to fill available width */
-    }
-
-    /* Sidebar moves below the canvas and becomes horizontal */
-    .editor-sidebar { 
-        position: relative; 
-        top: auto; 
-        transform: none; 
-        width: 100%; 
-        flex-direction: row; 
-        justify-content: center; 
-        padding-top: 1rem;
-    }
-    
-    .thumb-list {
-        flex-direction: row;
-    }
-    .plus-btn {
-        order: -1; 
-    }
-
-    /* Bottom Control Bar stacks on mobile */
-    .control-bar-bottom {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem 1rem;
-        margin-top: 1.5rem;
-        max-width: 100%;
-        border-radius: 10px;
-    }
-    
-    .options-group {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .tool-btn {
-        padding: 0.6rem 0.8rem;
-    }
-}
-
-/* Existing editor-topbar and other unnecessary styles are removed/commented out */
-
-/* Existing editor-topbar and other unnecessary styles are removed/commented out */
-
-/* Editor layout
-.editor-wrapper {
-  min-height: 100vh;
-  padding: 2.2rem 3rem;
-  color: #e6eef8;
-  background: #000;
-}
-
-.editor-topbar {
+.editor-page__result-container {
+  width: 75%;
+  aspect-ratio: 4 / 3;
+  max-height: 600px;
+  border: 2px solid #333;
+  border-radius: 12px;
+  margin: 75px auto 0 auto;
+  overflow: hidden; /* ensures image doesn't overflow */
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.editor-topbar .ghost {
-  background: transparent;
-  border: none;
-  color: #bcd2ff;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.editor-controls {
-  display: flex;
-  gap: 0.6rem;
   justify-content: center;
-  flex: 1;
+  align-items: center;
 }
 
-.tool {
-  background: rgba(255,255,255,0.03);
-  color: #dfe9ff;
-  border: 1px solid rgba(255,255,255,0.04);
-  padding: 0.6rem 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.download-btn {
-  background: #2f6cff;
-  color: #fff;
-  padding: 0.7rem 1.1rem;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.editor-main {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.canvas-wrap {
-  flex: 1 1 auto;
+.loading-spinner {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 }
 
-.canvas-stage {
-  position: relative;
-  background: #0b0b0b;
- 
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
- 
-  overflow: hidden; 
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
-.original-canvas,
-.processed-canvas {
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-icon {
+  font-size: 3rem;
+  animation: shake 0.5s ease-in-out;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-countdown {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.editor-page__editing-tools-container {
+  width: 50%;
+  height: 100px;
+  border-radius: 12px;
   position: absolute;
-  top: 0;
-  left: 0;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  margin: 1px;
+  padding: 10px;
+  background-color: #171717;
+}
+
+.editor-page__editing-tools-container__tools-area {
+  width: 80%;
+  height: 100%;
+  border-radius: 12px;
+  margin: 1px;
+}
+
+.editor-page__editing-tools-container .download-btn {
+  height: 100%;
+  width: 20%;
+  background-color: #3164f4;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.editor-page__editing-tools-container .download-btn:hover {
+  background-color: #254eda;
+}
+
+.editor-page__editing-tools-container .download-btn:active {
+  transform: translateY(1px);
+}
+
+.editor-page__editing-tools-container__tools-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-page__editing-tools-container__tools-area p {
+  font-size: 16px;
+  color: #494848;
+}
+
+.editor-page__editing-tools-container__tools-area__tool-options {
+  display: flex;
+  justify-content: start;
+  gap: 5px;
+  width: 100%;
+}
+
+.editor-page__editing-tools-container__tools-area__tool-options p{
+  width: fit-content;
+  font-size: 16px;
+  color: #494848;
+}
+
+.editor-page__editing-tools-container__tools-area__tool-options--option {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: start; 
+  gap: 3px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #262626;
+}
+
+.editor-page__editing-tools-container__tools-area__tool-options--option img{
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+.editor-page__generations-history-container {
+  position: absolute;
+  top: 0.1px;
+  right: 20px;
+  width: 7%;
+  min-width: 100px;
+  height: 50%;
+  border-radius: 12px;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: start;
+  align-items: center;
+}
+
+.editor-page__generations-history-item {
+  width: 95%;
+  height: 70px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #1b1b1b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor-page__generations-history-item img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.editor-page__generations-history-item--image-wrapper {
   width: 100%;
   height: 100%;
+  border: 1px dashed #777;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor-page__generations-history-item--image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
-  z-index: 10; 
-
-
-.result-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50%; 
-  height: 100%;
-  overflow: hidden; 
-  z-index: 20; 
-  
-} 
-
-
-.result-overlay .processed-canvas {
-
-  z-index: 1; 
- 
+  padding: 10px;
 }
 
-
-.split-handle {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 36px; 
-  transform: translateX(-50%); 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: ew-resize; 
-  z-index: 30; 
+.editor-page__generations-history-item.selected {
+  border-color: #c1c1c1;
+  box-shadow: 0 6px 18px rgba(49,100,244,0.18);
 }
 
-.split-handle .handle-line {
-  width: 2px;
-  height: 70%; 
-  background: rgba(255,255,255,0.6);
-  border-radius: 2px;
+.editor-page__generations-history-item--add {
+  padding: 10px;
+  width: 100%;
 }
 
-.split-handle .handle-knob {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.6);
-  transform: translateY(-50%); 
-  top: 50%;
-}
-
-
-.label {
-    position: absolute;
-    top: 10px; 
-    padding: 0.4rem 0.8rem;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    z-index: 40; 
-    pointer-events: none; 
-    user-select: none; 
-.before-label {
-    left: 10px; 
-}
-.after-label {
-    
-    transform: translateX(-100%); 
-}
-*/
-/*
-.editor-bottom {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.editor-bottom .small {
-  color: #cbdcff;
-  font-size: 0.9rem;
-}
-
-.note {
-  color: #9fb0d9;
-  font-size: 0.8rem;
-}
-
-.editor-sidebar {
-  width: 140px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-}
-
-.thumb-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.side-thumb {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-.plus {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.editor-page__generations-history-item--add .editor-page__generations-history-item--image-wrapper {
   background: rgba(255,255,255,0.02);
-  color: #cde0ff;
-  font-size: 1.5rem;
 }
 
-.editor-loading {
-  position: fixed;
-  left: 50%;
-  top: 60px;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
+.editor-page__generations-more {
+  width: 100%;
+  text-align: center;
+  color: #9aa2b2;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 0;
+}
+.editor-page__generations-more:hover {
   color: #fff;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
 }
 
-@media (max-width: 900px) {
-  .editor-main { flex-direction: column; }
-  .editor-sidebar { width: 100%; flex-direction: row; justify-content: center; }
-} */
+/* modal that shows full generation grid (horizontally scrollable columns of 3 rows) */
+.editor-page__generations-modal {
+  /* use fixed positioning so the modal isn't clipped by parent containers */
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  /* slightly smaller modal to reduce thumbnail size and fit comfortably */
+  width: calc(min(84vw, 300px));
+  /* reduce height to show 2 rows comfortably */
+  height: calc(min(44vh, 240px));
+  background: #121212;
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  border: 1px solid #222;
+  overflow: hidden;
+}
+
+.editor-page__generations-modal-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Arrow buttons for modal scroll */
+.editor-page__generations-modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 20px;
+}
+.editor-page__generations-modal-arrow.left {
+  left: 8px;
+}
+.editor-page__generations-modal-arrow.right {
+  right: 8px;
+}
+.editor-page__generations-modal-arrow:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+.editor-page__generations-modal-grid {
+  /* Constrain the visible viewport to exactly 2 columns and allow horizontal scrolling for more */
+  position: absolute;
+  left: 10px;
+  top: 34px;
+  /* don't stretch to the right so only 2 columns are visible */
+  width: calc(2 * 120px + 8px);
+  /* set height to fill remaining modal space */
+  height: calc(100% - 44px);
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, 1fr);
+  /* fixed column width */
+  grid-auto-columns: 120px;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: start;
+  padding-bottom: 6px;
+}
+
+/* Make horizontal scrollbar visible and styled */
+.editor-page__generations-modal-grid {
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+}
+
+/* WebKit/Blink scrollbar styling (Chrome, Edge, Safari) */
+.editor-page__generations-modal-grid::-webkit-scrollbar {
+  height: 12px; /* horizontal scrollbar height */
+}
+.editor-page__generations-modal-grid::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+}
+.editor-page__generations-modal-grid::-webkit-scrollbar-thumb {
+  background: rgba(100,120,200,0.6);
+  border-radius: 6px;
+  border: 2px solid rgba(0,0,0,0.25);
+}
+
+/* Firefox scrollbar styling */
+.editor-page__generations-modal-grid {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,120,200,0.6) rgba(255,255,255,0.03);
+}
+
+.editor-page__generations-modal-item {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid #333;
+  padding: 4px;
+}
+
+.editor-page__generations-modal-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.editor-page__generations-modal-item.selected {
+  outline: 3px solid rgba(49,100,244,0.18);
+}
+
+/* Responsive adjustments for the editor tools and result area */
+@media (max-width: 1024px) {
+  .editor-page__result-container {
+    width: 90%;
+    max-height: 60vh;
+    margin: 50px auto 0 auto;
+  }
+
+  .editor-page__editing-tools-container {
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  /* Make the editing tool bar stack and enlarge touch targets on mobile */
+  .editor-page__editing-tools-container {
+    width: calc(100% - 24px);
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+    padding: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 60;
+    background-color: rgba(23,23,23,0.95);
+  }
+
+  .editor-page__editing-tools-container__tools-area {
+    width: 100%;
+    height: auto;
+    padding: 4px 0;
+  }
+
+  .editor-page__editing-tools-container .download-btn {
+    width: 100%;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  .editor-page__editing-tools-container__tools-area__tool-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .editor-page__editing-tools-container__tools-area__tool-options--option {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background-color: #262626;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .editor-page__editing-tools-container__tools-area__tool-options--option img{
+    width: 20px;
+    height: 20px;
+  }
+
+  .editor-page__editing-tools-container__tools-area p {
+    font-size: 14px;
+    color: #ddd;
+    margin: 0;
+  }
+
+  /* Hide the side history on small screens to reduce clutter */
+  .editor-page__generations-history-container {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .editor-page__result-container {
+    width: calc(100% - 20px);
+    margin: 20px auto 0 auto;
+    aspect-ratio: unset;
+    max-height: 50vh;
+  }
+
+  .editor-page__editing-tools-container__tools-area__tool-options--option {
+    min-width: 64px;
+    padding: 8px;
+  }
+
+  .editor-page__editing-tools-container .download-btn {
+    height: 48px;
+    font-size: 15px;
+  }
+}

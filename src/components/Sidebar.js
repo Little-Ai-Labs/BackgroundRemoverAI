@@ -152,19 +152,6 @@ const Sidebar = (props) => {
           {!collapsed && <span>Credits</span>}
         </NavLink>
       </div>
-      <hr className="divider" />
-      <div className={collapsed ? "nav-item-collapsed" : "nav-item"}>
-        <NavLink
-          to="/login"
-          className="nav-link"
-          style={{
-            justifyContent: collapsed ? "center" : "flex-start",
-          }}
-        >
-          <img id={collapsed ? "logo-collapsed" : "logo"} src={loginIcon} />
-          {!collapsed && <span>Login</span>}
-        </NavLink>
-      </div>
 
       <div className="sidebar-footer">
         {!collapsed && <img id="invite-friends-img" src={inviteFriendsImg} />}
